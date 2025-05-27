@@ -1,4 +1,4 @@
-name: auto-build-PDS_MR
+name: getsoda
 on:
   workflow_dispatch:
   schedule:
