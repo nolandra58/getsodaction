@@ -16,4 +16,4 @@ jobs:
       - uses: actions/setup-python@v5
       - name: Install imagemagick (convert)
         run: |
-          python my_script.py
+          python get.py
