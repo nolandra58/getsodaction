@@ -1,4 +1,6 @@
 import json
+from datetime import datetime
+from urllib.parse import quote
 from playwright.sync_api import sync_playwright
 
 def capture_json_responses(url, proxy_server):
@@ -8,8 +10,8 @@ def capture_json_responses(url, proxy_server):
     with sync_playwright() as p:
         # 启动浏览器并配置代理
         browser = p.chromium.launch(
-            headless=True,
-            # proxy={"server": proxy_server}
+            headless=False,
+            #proxy={"server": proxy_server}
         )
         
         # 创建上下文
@@ -58,29 +60,66 @@ def capture_json_responses(url, proxy_server):
             # 确保关闭浏览器
             context.close()
             browser.close()
-
+#dict2m3u
+#由字典生成m3u函数
+def dict_to_m3u(channel_dict, output_file="playlist.m3u"):
+    """
+    将字典 {频道名: URL} 转换为 M3U 文件
+    
+    Args:
+        channel_dict (dict): 字典格式 {频道名: URL}
+        output_file (str): 输出文件名（默认 playlist.m3u）
+    """
+    proxy = "http://127.0.0.1:1081"
+    live_url = ''
+    live_token = ''
+    user_url = "https://www.camsoda.com/api/v1/video/vtoken/"
+    status1 = 0
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write("#EXTM3U\n")  # M3U 文件头
+        i = 0
+        for strname, strlogo in channel_dict.items():
+            json_data = capture_json_responses(user_url + strname, proxy)
+            json2 = json_data[0]['data']
+            status1 = json2['status']
+            #print(f"{status1}数据类型: {type(status1)}")
+            if status1 == 1:
+                #print(f"{json2['width']}数据类型: {type(json2['width'])}")
+                if json2['edge_servers']:
+                    live_token = str(json2['token'])
+                    live_url = "https://" + str(json2['edge_servers'][0]) + "/" + str(json2['stream_name']) + "_v1/index.m3u8?token=" + quote(live_token)
+                    f.write(f'#EXTINF:-1 group-title="livesoda" tvg-logo="{strlogo}",{strname}\n')
+                    f.write(f"{live_url}\n")
+            i+=1
+            if i == 50:
+                break
 # 使用示例
 if __name__ == "__main__":
     target_url = "https://www.camsoda.com/api/v1/browse/online"  # 替换为实际目标URL
     proxy = "http://127.0.0.1:1081"   # 代理地址
-    
+    # 返回当前日期和时间（含年月日时分秒毫秒）
+    current_time = datetime.now()
+    # 格式化输出
+    formatted_time = current_time.strftime("%Y-%m-%d--%H:%M:%S")
+    dict1 = {f"更新时间{formatted_time}": "http://example.com/cctv"}
     print(f"正在通过代理 {proxy} 捕获 {target_url} 的JSON响应...")
     json_data = capture_json_responses(target_url, proxy)
-    
+    print("解析成功，数据类型:", type(json_data))
     if json_data:
         # 保存JSON数据到文件
         with open("api_responses.json", "w", encoding="utf-8") as f:
+            #json.dump(json_data[0]['data'], f, indent=2, ensure_ascii=False)
             json.dump(json_data, f, indent=2, ensure_ascii=False)
-        
-        # 打印摘要信息
-        print(f"\n成功捕获 {len(json_data)} 个JSON响应:")
-        for i, resp in enumerate(json_data, 1):
-            print(f"\n响应 #{i}:")
-            print(f"URL: {resp['url']}")
-            print(f"方法: {resp['method']}")
-            print(f"状态码: {resp['status']}")
-            print(f"数据大小: {len(str(resp['data']))} 字符")
-        
         print("\n所有JSON响应已保存到 api_responses.json")
+        #print("解析成功，数据类型:", type(json_data))
+        for item in json_data[0]['data']['results']:
+            #print(item)
+            #if "data" in item["metadata"]:
+            if '1' in item['tpl'] and '15' in item['tpl']:
+                strname = str(item['tpl']['1'])
+                strlogo = str(item['tpl']['15'])
+                dict1[strname] = strlogo
+        print(dict1)
+        dict_to_m3u(dict1,"livesoda.m3u")
     else:
         print("未能捕获JSON响应数据")
