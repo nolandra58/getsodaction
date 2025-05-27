@@ -10,7 +10,7 @@ def capture_json_responses(url, proxy_server):
     with sync_playwright() as p:
         # 启动浏览器并配置代理
         browser = p.chromium.launch(
-            headless=False,
+            headless=True,
             #proxy={"server": proxy_server}
         )
         
