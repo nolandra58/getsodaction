@@ -48,7 +48,7 @@ def capture_json_responses(url, proxy_server):
             page.goto(url, timeout=30000, wait_until="networkidle")
             
             # 等待额外时间确保捕获所有异步请求
-            page.wait_for_timeout(5000)
+            page.wait_for_timeout(3000)
             
             return json_responses
             
