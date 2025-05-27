@@ -9,7 +9,7 @@ def capture_json_responses(url, proxy_server):
         # 启动浏览器并配置代理
         browser = p.chromium.launch(
             headless=True,
-            proxy={"server": proxy_server}
+            # proxy={"server": proxy_server}
         )
         
         # 创建上下文
