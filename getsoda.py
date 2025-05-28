@@ -76,7 +76,13 @@ def dict_to_m3u(channel_dict, output_file="playlist.m3u"):
     user_url = "https://www.camsoda.com/api/v1/video/vtoken/"
     status1 = 0
     with open(output_file, 'w', encoding='utf-8') as f:
+        # 返回当前日期和时间（含年月日时分秒毫秒）
+        current_time = datetime.now()
+        # 格式化输出
+        formatted_time = current_time.strftime("%Y-%m-%d--%H:%M:%S")
         f.write("#EXTM3U\n")  # M3U 文件头
+        f.write(f'#EXTINF:-1 group-title="livesoda",f"更新时间{formatted_time}"\n')
+        f.write("http://example.com/cctv")
         i = 0
         for strname, strlogo in channel_dict.items():
             json_data = capture_json_responses(user_url + strname, proxy)
@@ -90,18 +96,14 @@ def dict_to_m3u(channel_dict, output_file="playlist.m3u"):
                     live_url = "https://" + str(json2['edge_servers'][0]) + "/" + str(json2['stream_name']) + "_v1/index.m3u8?token=" + quote(live_token)
                     f.write(f'#EXTINF:-1 group-title="livesoda" tvg-logo="{strlogo}",{strname}\n')
                     f.write(f"{live_url}\n")
-            i+=1
+                    print(f"{i} : {live_url}")
+                    i+=1
             if i == 50:
                 break
 # 使用示例
 if __name__ == "__main__":
     target_url = "https://www.camsoda.com/api/v1/browse/online"  # 替换为实际目标URL
     proxy = "http://127.0.0.1:1081"   # 代理地址
-    # 返回当前日期和时间（含年月日时分秒毫秒）
-    current_time = datetime.now()
-    # 格式化输出
-    formatted_time = current_time.strftime("%Y-%m-%d--%H:%M:%S")
-    dict1 = {f"更新时间{formatted_time}": "http://example.com/cctv"}
     print(f"正在通过代理 {proxy} 捕获 {target_url} 的JSON响应...")
     json_data = capture_json_responses(target_url, proxy)
     print("解析成功，数据类型:", type(json_data))
