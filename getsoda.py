@@ -82,7 +82,7 @@ def dict_to_m3u(channel_dict, output_file="playlist.m3u"):
         formatted_time = current_time.strftime("%Y-%m-%d--%H:%M:%S")
         f.write("#EXTM3U\n")  # M3U 文件头
         f.write(f'#EXTINF:-1 group-title="livesoda",f"更新时间{formatted_time}"\n')
-        f.write("http://example.com/cctv")
+        f.write("http://example.com/cctv\n")
         i = 0
         for strname, strlogo in channel_dict.items():
             json_data = capture_json_responses(user_url + strname, proxy)
