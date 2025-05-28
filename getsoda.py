@@ -104,6 +104,7 @@ def dict_to_m3u(channel_dict, output_file="playlist.m3u"):
 if __name__ == "__main__":
     target_url = "https://www.camsoda.com/api/v1/browse/online"  # 替换为实际目标URL
     proxy = "http://127.0.0.1:1081"   # 代理地址
+    dict1 = {}
     print(f"正在通过代理 {proxy} 捕获 {target_url} 的JSON响应...")
     json_data = capture_json_responses(target_url, proxy)
     print("解析成功，数据类型:", type(json_data))
