@@ -120,7 +120,8 @@ if __name__ == "__main__":
             #if "data" in item["metadata"]:
             if '1' in item['tpl'] and '15' in item['tpl']:
                 strname = str(item['tpl']['1'])
-                strlogo = str(item['tpl']['15'])
+                strlogo = str(item['tpl']['10'])
+                #strlogo = str(item['tpl']['15'])
                 dict1[strname] = strlogo
         print(dict1)
         dict_to_m3u(dict1,"livesoda.m3u")
