@@ -1,8 +1,8 @@
 name: getsoda
 on:
   workflow_dispatch:
-  schedule:
-    - cron: 50 * * * *
+  # schedule:
+    # - cron: 50 * * * *
 jobs:
   build-and-test:
     runs-on: ubuntu-latest # 推荐使用最新的 Ubuntu 长期支持版本
